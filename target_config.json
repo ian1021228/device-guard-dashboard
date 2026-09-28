@@ -1,0 +1,9 @@
+{
+  "targetMac": "e2:ad:31:a3:34:92",
+  "targetHostname": "iPhone",
+  "targetIp": "192.168.1.114",
+  "targetName": "Apple iPhone (手機)",
+  "deviceType": "Apple iPhone (iOS)",
+  "isIos": true,
+  "profileName": "iOS/iPadOS 邏輯 (5秒抗推播瞬斷過濾 + 極速鎖屏)"
+}

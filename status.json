@@ -1,0 +1,153 @@
+{
+  "online": false,
+  "state": "OFFLINE",
+  "verifyProgress": 0.0,
+  "elapsed": 0,
+  "ip": "192.168.1.114",
+  "mac": "e2:ad:31:a3:34:92",
+  "hostname": "iPhone",
+  "deviceName": "Apple iPhone (手機)",
+  "deviceType": "Apple iPhone (iOS)",
+  "isIos": true,
+  "profileName": "iOS/iPadOS 邏輯 (5秒抗推播瞬斷過濾 + 極速鎖屏)",
+  "latencyMs": 0,
+  "todaySessions": 22,
+  "todayTotalSeconds": 3422,
+  "peakSessionSeconds": 308,
+  "filteredBurstsCount": 218,
+  "broadcastMuted": true,
+  "recentEvents": [
+    {
+      "time": "15:32:46",
+      "type": "filter",
+      "title": "Apple iPhone (手機) 推播靜默攔截",
+      "duration": 0.3,
+      "desc": "APNs 喚醒 0.3s (<5s)，已自動過濾防誤報"
+    },
+    {
+      "time": "15:32:45",
+      "type": "filter",
+      "title": "Apple iPhone (手機) 推播靜默攔截",
+      "duration": 4.5,
+      "desc": "APNs 喚醒 4.5s (<5s)，已自動過濾防誤報"
+    },
+    {
+      "time": "15:32:41",
+      "type": "filter",
+      "title": "Apple iPhone (手機) 推播靜默攔截",
+      "duration": 1.2,
+      "desc": "APNs 喚醒 1.2s (<5s)，已自動過濾防誤報"
+    },
+    {
+      "time": "15:32:40",
+      "type": "filter",
+      "title": "Apple iPhone (手機) 推播靜默攔截",
+      "duration": 0.4,
+      "desc": "APNs 喚醒 0.4s (<5s)，已自動過濾防誤報"
+    },
+    {
+      "time": "15:32:39",
+      "type": "filter",
+      "title": "Apple iPhone (手機) 推播靜默攔截",
+      "duration": 1.0,
+      "desc": "APNs 喚醒 1.0s (<5s)，已自動過濾防誤報"
+    },
+    {
+      "time": "15:32:38",
+      "type": "filter",
+      "title": "Apple iPhone (手機) 推播靜默攔截",
+      "duration": 0.6,
+      "desc": "APNs 喚醒 0.6s (<5s)，已自動過濾防誤報"
+    },
+    {
+      "time": "15:32:37",
+      "type": "filter",
+      "title": "Apple iPhone (手機) 推播靜默攔截",
+      "duration": 0.2,
+      "desc": "APNs 喚醒 0.2s (<5s)，已自動過濾防誤報"
+    },
+    {
+      "time": "15:32:37",
+      "type": "filter",
+      "title": "Apple iPhone (手機) 推播靜默攔截",
+      "duration": 1.4,
+      "desc": "APNs 喚醒 1.4s (<5s)，已自動過濾防誤報"
+    },
+    {
+      "time": "15:32:35",
+      "type": "filter",
+      "title": "Apple iPhone (手機) 推播靜默攔截",
+      "duration": 1.8,
+      "desc": "APNs 喚醒 1.8s (<5s)，已自動過濾防誤報"
+    },
+    {
+      "time": "15:32:34",
+      "type": "filter",
+      "title": "Apple iPhone (手機) 推播靜默攔截",
+      "duration": 2.4,
+      "desc": "APNs 喚醒 2.4s (<5s)，已自動過濾防誤報"
+    },
+    {
+      "time": "15:32:31",
+      "type": "filter",
+      "title": "Apple iPhone (手機) 推播靜默攔截",
+      "duration": 3.0,
+      "desc": "APNs 喚醒 3.0s (<5s)，已自動過濾防誤報"
+    },
+    {
+      "time": "15:32:28",
+      "type": "filter",
+      "title": "Apple iPhone (手機) 推播靜默攔截",
+      "duration": 3.0,
+      "desc": "APNs 喚醒 3.0s (<5s)，已自動過濾防誤報"
+    },
+    {
+      "time": "15:32:25",
+      "type": "filter",
+      "title": "Apple iPhone (手機) 推播靜默攔截",
+      "duration": 0.9,
+      "desc": "APNs 喚醒 0.9s (<5s)，已自動過濾防誤報"
+    },
+    {
+      "time": "15:32:24",
+      "type": "switch",
+      "title": "切換監控目標為 Apple iPhone (手機)",
+      "duration": 0,
+      "desc": "套用 iOS/iPadOS 專屬模式"
+    },
+    {
+      "time": "15:32:12",
+      "type": "filter",
+      "title": "黃禹程的iPad 推播靜默攔截",
+      "duration": 3.1,
+      "desc": "APNs 喚醒 3.1s (<5s)，已自動過濾防誤報"
+    }
+  ],
+  "hourlyStats": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    3422,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "updated_at": "2026-09-28T15:32:46.275052"
+}

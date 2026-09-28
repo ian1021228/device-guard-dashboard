@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>家庭局域網多設備即時視覺化監控儀表板</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Header / Navigation Bar -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand">
+        <div class="brand-icon">
+          <span class="pulse-ring"></span>
+          📡
+        </div>
+        <div class="brand-text">
+          <h1>局域網多設備即時視覺化監控系統</h1>
+          <span class="sub-brand" id="subBrandHeader">🔕 靜音模式 • 目前監控：黃禹程的iPad (192.168.1.102)</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="changelogBtn" class="btn btn-outline" title="查看更新紀錄">
+          📋 更新紀錄 <span class="badge badge-primary">v2.3.2</span>
+        </button>
+        <button id="authBtn" class="btn btn-primary" title="登入管理員">
+          🔒 管理員登入
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Layout -->
+  <main class="dashboard-main">
+    <!-- Top System Banner -->
+    <section class="system-status-banner">
+      <div class="banner-pill">
+        <span class="status-dot pulsing"></span>
+        <span id="backendStatusText">視覺化靜音監控中 (超低延遲 150ms • 零廣播干擾)</span>
+      </div>
+      <div class="banner-tags">
+        <span class="tag" id="targetMacTag">MAC: 30:e0:4f:da:b9:1c</span>
+        <span class="tag" id="currentIpTag">IP: 192.168.1.102</span>
+        <span class="tag tag-highlight" id="logicProfileTag">🍎 iOS/iPadOS 邏輯 (5秒抗推播)</span>
+        <span class="tag">探測週期: 150ms</span>
+      </div>
+    </section>
+
+    <!-- Hero Card: Current Live State of Monitored Device -->
+    <section class="hero-status-card" id="heroCard">
+      <div class="hero-glow"></div>
+      <div class="hero-header">
+        <div class="device-info">
+          <span class="device-type" id="heroDeviceType">Apple iPad (iPadOS)</span>
+          <h2 class="target-name" id="heroTargetName">黃禹程的iPad</h2>
+        </div>
+        <div class="state-badge-container">
+          <div class="auto-test-badge" id="autoTestBadge" title="系統常駐自動連線測試探測">
+            <span class="status-dot pulsing"></span>
+            <span id="autoTestBadgeText">⚡ 自動連線測試：已啟用</span>
+          </div>
+          <button class="btn btn-secondary btn-sm" id="triggerTestBtn" style="padding: 5px 12px; font-size: 0.8rem;" title="立即對當前設備執行連線測試">
+            ⚡ 立即測試
+          </button>
+          <div id="liveBadge" class="live-badge badge-offline">
+            <span class="badge-dot"></span>
+            <span id="liveStatusLabel">休眠中 / 待機鎖定</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Center Meter / Timer -->
+      <div class="hero-body">
+        <div class="meter-circle-container">
+          <div class="meter-circle" id="meterCircle">
+            <div class="meter-inner">
+              <span class="meter-label">本次連線時長</span>
+              <span class="meter-timer" id="liveTimer">00:00</span>
+              <span class="meter-sub" id="timerSubText">目前處於休眠鎖定狀態</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-metrics">
+          <div class="metric-card">
+            <span class="metric-title">⏱️ 今日累計在線</span>
+            <span class="metric-value" id="todayTotalTime">75 秒</span>
+            <span class="metric-trend text-primary" id="todayTotalSub">約 1 分 15 秒</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-title">📱 今日開機/上線次數</span>
+            <span class="metric-value" id="todaySessionsCount">9 次</span>
+            <span class="metric-trend text-success" id="sessionsSubText">已通過 5 秒抗推播驗證</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-title">🛡️ APNs 推播靜默攔截</span>
+            <span class="metric-value text-warning" id="filteredBurstsCount">20 次</span>
+            <span class="metric-trend text-success">100% 靜默過濾防誤報</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-title">⚡ 探測響應延遲</span>
+            <span class="metric-value" id="pingLatencyVal">14 ms</span>
+            <span class="metric-trend text-mono">0.15s 極速離線感應</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Visual Analytics & Charts Section -->
+    <section class="visual-charts-section">
+      <div class="charts-grid">
+        <!-- Chart 1: 24-Hour Usage Distribution -->
+        <div class="card glass-card chart-card">
+          <div class="card-header">
+            <div class="header-title">
+              <h3>📊 24 小時時段在線時長分佈圖</h3>
+              <span class="sub-text">直觀展示目標設備在各整點的實際使用秒數</span>
+            </div>
+            <span class="badge badge-primary">今日累計</span>
+          </div>
+          <div class="card-body">
+            <div class="bar-chart-container" id="hourlyChartContainer">
+              <!-- Rendered via JS SVG -->
+            </div>
+            <div class="chart-legend">
+              <span class="legend-item"><span class="legend-color legend-bar"></span> 使用時長 (秒數)</span>
+              <span class="legend-item"><span class="legend-color legend-peak"></span> 當前尖峰時段</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chart 2: Usage vs Filtered Push Donut -->
+        <div class="card glass-card chart-card">
+          <div class="card-header">
+            <div class="header-title">
+              <h3>🎯 網路訊號行為佔比圓環圖</h3>
+              <span class="sub-text">真實解鎖使用 vs APNs 背景推播瞬斷之過濾成效</span>
+            </div>
+            <span class="badge badge-success">智能過濾</span>
+          </div>
+          <div class="card-body donut-chart-body">
+            <div class="donut-chart-wrapper">
+              <div class="donut-svg-box" id="donutChartBox">
+                <!-- Rendered via JS SVG -->
+              </div>
+              <div class="donut-center-info">
+                <span class="donut-percent" id="efficiencyPct">69%</span>
+                <span class="donut-sub">推播過濾率</span>
+              </div>
+            </div>
+            <div class="donut-stats-list">
+              <div class="donut-stat-row">
+                <span class="stat-dot dot-online"></span>
+                <span class="stat-name">真人解鎖上線</span>
+                <strong class="stat-val" id="realSessionsVal">9 次 (31%)</strong>
+              </div>
+              <div class="donut-stat-row">
+                <span class="stat-dot dot-filtered"></span>
+                <span class="stat-name">APNs 背景推播攔截</span>
+                <strong class="stat-val text-warning" id="filteredRatioVal">20 次 (69%)</strong>
+              </div>
+              <div class="donut-stat-row">
+                <span class="stat-dot dot-mute"></span>
+                <span class="stat-name">語音廣播干擾</span>
+                <strong class="stat-val text-success">0 次 (完全靜音)</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- iOS / iPadOS Network Logic Explainer & Verification Radar -->
+    <section class="console-grid">
+      <!-- Logic Radar Card -->
+      <div class="card glass-card plan-a-card">
+        <div class="card-header">
+          <div class="header-title">
+            <h3>🍎 iOS / iPadOS 網路邏輯與抗推播驗證儀</h3>
+            <span class="sub-text" id="radarProfileDesc">針對 Apple 行動設備深度調優之省電與休眠感測架構</span>
+          </div>
+          <span class="badge badge-success" id="radarBadge">5秒抗推播演算法</span>
+        </div>
+        <div class="card-body">
+          <!-- Flow Steps -->
+          <div class="verify-stages">
+            <div class="stage-item stage-idle" id="stageIdle">
+              <span class="stage-icon">💤</span>
+              <span class="stage-title">休眠鎖定 (DTIM)</span>
+              <span class="stage-desc">Wi-Fi 低功耗待機</span>
+            </div>
+            <div class="stage-arrow">➔</div>
+            <div class="stage-item stage-verifying" id="stageVerifying">
+              <span class="stage-icon">🔍</span>
+              <span class="stage-title">5 秒推播觀察期</span>
+              <span class="stage-desc">&lt;5秒瞬斷自動過濾</span>
+            </div>
+            <div class="stage-arrow">➔</div>
+            <div class="stage-item stage-confirmed" id="stageConfirmed">
+              <span class="stage-icon">🟢</span>
+              <span class="stage-title">真人解鎖確認</span>
+              <span class="stage-desc">持續 &ge; 5秒認定開機</span>
+            </div>
+          </div>
+
+          <!-- Dynamic Verification Progress Bar -->
+          <div class="verify-progress-block">
+            <div class="progress-labels">
+              <span id="verifyStatusText">當前驗證狀態：待機休眠中</span>
+              <span id="verifyProgressPercent">0%</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-bar-fill" id="verifyProgressBar" style="width: 0%;"></div>
+            </div>
+            <div class="progress-ticks">
+              <span>0s (初始訊號)</span>
+              <span class="tick-threshold" id="tickThresholdText">5s 判定門檻</span>
+              <span>持續使用中</span>
+            </div>
+          </div>
+
+          <!-- Technical Explainer Box -->
+          <div class="notice-box">
+            <span class="notice-icon">⚙️</span>
+            <div class="notice-text">
+              <strong>iOS / iPadOS 網路電源管理邏輯：</strong>
+              <ul class="logic-bullets">
+                <li><strong>黑屏休眠 (Sleep)</strong>：鎖屏後 5~15 秒關閉 Wi-Fi 收發進入低功耗休眠，對 ICMP ping 呈現 100% 封包遺失。</li>
+                <li><strong>背景推播 (APNs)</strong>：接收 LINE、iMessage 或 iCloud 同步時，iOS 會短暫喚醒 Wi-Fi 晶片 1~4 秒，隨後立即切回休眠。若無 5 秒過濾將造成嚴重黑屏誤報！</li>
+                <li><strong>真人解鎖 (Active)</strong>：螢幕開啟後 Wi-Fi 維持長連線，持續連線 &ge; 5 秒即可 100% 確認為真人使用。</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Network Target Specs -->
+      <div class="card glass-card network-specs-card">
+        <div class="card-header">
+          <h3>📡 當前監控設備規格資訊</h3>
+          <span class="badge badge-primary" id="specsBadge">實體鎖定</span>
+        </div>
+        <div class="card-body">
+          <ul class="specs-list">
+            <li>
+              <span class="spec-name">設備偵測名稱</span>
+              <strong class="spec-value" id="specHostname">黃禹程的iPad</strong>
+            </li>
+            <li>
+              <span class="spec-name">設備作業系統</span>
+              <strong class="spec-value text-primary" id="specDeviceType">Apple iPad (iPadOS)</strong>
+            </li>
+            <li>
+              <span class="spec-name">實體硬體 MAC</span>
+              <strong class="spec-value text-mono text-primary" id="specMac">30:e0:4f:da:b9:1c</strong>
+            </li>
+            <li>
+              <span class="spec-name">當前網路 IP</span>
+              <strong class="spec-value text-mono" id="specIp">192.168.1.102</strong>
+            </li>
+            <li>
+              <span class="spec-name">動態自動追蹤</span>
+              <strong class="spec-value text-success">已開啟 (IP變更自動秒級跟隨)</strong>
+            </li>
+            <li>
+              <span class="spec-name">套用網路邏輯</span>
+              <strong class="spec-value text-warning" id="specLogicProfile">iOS/iPadOS 5秒抗推播瞬斷過濾</strong>
+            </li>
+            <li>
+              <span class="spec-name">語音廣播狀態</span>
+              <strong class="spec-value text-muted">🔕 已關閉 (全視覺化靜音監控)</strong>
+            </li>
+            <li>
+              <span class="spec-name">連線測試判定</span>
+              <strong class="spec-value" id="specConnectionResult">⚡ 自動探測運作中 (未連線設備強制阻斷)</strong>
+            </li>
+          </ul>
+          <div style="display: flex; gap: 10px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border-glass);">
+            <button class="btn btn-sm btn-outline" id="toggleSimStateBtn" style="flex: 1;" title="切換當前設備連線/離線狀態以驗證測試阻斷邏輯">
+              🔄 模擬切換設備：連線 / 離線狀態
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Activity Log Timeline -->
+    <section class="timeline-section card glass-card">
+      <div class="card-header">
+        <div class="header-title">
+          <h3>📜 即時活動歷史時間軸（視覺化事件標籤）</h3>
+          <span class="sub-text">自動記錄目標設備所有開啟、休眠、背景推播攔截與設備切換事件</span>
+        </div>
+        <div class="timeline-actions">
+          <button id="refreshLogBtn" class="btn btn-sm btn-outline">🔄 立即重新整理</button>
+          <button id="clearSimBtn" class="btn btn-sm btn-outline">清空顯示</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="timeline-container" id="timelineList">
+          <!-- Populated dynamically via JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Network Radar / LAN Devices (Interactive Target Selection Table) -->
+    <section class="lan-devices-section card glass-card" id="lanDevicesSection">
+      <div class="card-header">
+        <div class="header-title">
+          <h3>🌐 同網段設備雷達清單 (點選任一裝置即可切換監控)</h3>
+          <span class="sub-text">點擊下方任一行或按鈕，儀表板將立即動態切換追蹤該設備並套用對應網路邏輯</span>
+        </div>
+        <span class="badge badge-primary">同網段共 16 台設備</span>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="lan-table" id="lanTable">
+            <thead>
+              <tr>
+                <th>操作</th>
+                <th>實機偵測名稱 / 主機名</th>
+                <th>設備類型 / 系統</th>
+                <th>IP 位址</th>
+                <th>MAC 位址</th>
+                <th>製造商 (OUI)</th>
+                <th>套用網路邏輯</th>
+                <th>即時狀態</th>
+              </tr>
+            </thead>
+            <tbody id="lanDevicesBody">
+              <!-- Populated via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <div class="footer-container">
+      <p>© 2026 局域網智慧多設備即時視覺化監控系統 (Device Guard) • 支援 iOS / iPadOS 深度網路邏輯</p>
+      <p class="footer-meta">測試帳號：<code>antigravity</code> | 密碼：<code>123456</code> | 支援 Desktop & Mobile (393×852)</p>
+    </div>
+  </footer>
+
+  <!-- Changelog Modal (User Rule 1) -->
+  <div class="modal-backdrop" id="changelogModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h2>📋 系統首頁更新紀錄維護 (Changelog)</h2>
+        <button class="modal-close" id="closeChangelogBtn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <!-- Latest Version: v2.3.2 -->
+        <div class="changelog-entry current-version">
+          <div class="version-header">
+            <span class="version-tag badge badge-primary">v2.3.2 最新版本</span>
+            <span class="version-date">2026-09-28</span>
+          </div>
+          <h4>⚡ 連線測試全自動觸發 & 未連線設備嚴格阻斷防誤判機制</h4>
+          <ul>
+            <li><strong>連線測試全自動觸發 (Auto Connection Test)</strong>：
+              <ul>
+                <li>切換目標自動觸發：於下方設備表點選任一裝置時，系統<strong>立即自動觸發連線測試</strong>，徹底免除手動點擊操作。</li>
+                <li>常駐自動探測引擎：系統背景常駐「⚡ 自動連線測試」巡檢心跳（每 10 秒自動連線測試），亦提供「⚡ 立即測試」手動按鈕隨時複測。</li>
+              </ul>
+            </li>
+            <li><strong>未連線設備嚴格阻斷 (Zero-False-Positive Filter)</strong>：
+              <ul>
+                <li><strong>根本修復「未連線設備也通過測試」問題</strong>：移除盲目推進計時邏輯，實體校驗網路連線響應。</li>
+                <li><strong>未連線設備強制失敗</strong>：若目標設備處於休眠待機、未開啟 Wi-Fi 或關機（100% 封包遺失），連線測試<strong>必然判定失敗</strong>，進度條強制歸零並維持紅色離線警示，絕對不會誤判通過！</li>
+                <li><strong>瞬斷過濾與真實解鎖</strong>：iOS/iPadOS 之 APNs 瞬斷喚醒 (&lt;5s) 依然自動過濾重置；唯有持續連線達標之裝置方可通過抗推播驗證解鎖上線。</li>
+                <li>新增「🔄 模擬切換設備：連線/離線狀態」按鈕，便於即時驗證真實連線與未連線阻斷成效。</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Version: v2.3.1 -->
+        <div class="changelog-entry">
+          <div class="version-header">
+            <span class="version-tag badge badge-secondary">v2.3.1</span>
+            <span class="version-date">2026-09-28</span>
+          </div>
+          <h4>🛠️ 修復 405 錯誤、設備切換跳回、78% 觀察卡頓、紀錄清空與頁面寬度排版優化</h4>
+          <ul>
+            <li><strong>修復 405 錯誤與切換設備跳回問題</strong>：
+              <ul>
+                <li>環境隔離：針對靜態伺服器 (GitHub Pages) 徹底移除無效之 POST 請求，杜絕 <code>405 Method Not Allowed</code> 報錯。</li>
+                <li>設備狀態獨立鎖定：點選任意設備後持久鎖定，輪詢時絕不跳回前一裝置。</li>
+              </ul>
+            </li>
+            <li><strong>修復 5 秒推播觀察期卡在 78% 問題</strong>：
+              <ul>
+                <li>導入即時平滑驗證驅動引擎，驗證進度條從 0% 動態前進至 100%，不再凍結於靜態快照數值。</li>
+                <li>新增儀表盤互動測試：可隨時點擊中央儀表盤進行解鎖/休眠訊號測試。</li>
+              </ul>
+            </li>
+            <li><strong>修復歷史紀錄無法清空問題</strong>：
+              <ul>
+                <li>點擊「清空顯示」後持久保存清空狀態，不會被後續輪詢覆寫還原。</li>
+              </ul>
+            </li>
+            <li><strong>版面全面加寬至 1560px (95% 寬度) 與防文字擠壓</strong>：
+              <ul>
+                <li>主容器加寬至 1560px，指標卡片升級為寬螢幕 4 欄並排。</li>
+                <li>數據數值、趨勢標籤、設備規格與雷達表格全數加入防折行 (nowrap) 樣式，徹底解決文字被擠到第二行的問題。</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div class="changelog-entry">
+          <div class="version-header">
+            <span class="version-tag badge badge-secondary">v2.3.0</span>
+            <span class="version-date">2026-09-28</span>
+          </div>
+          <h4>🎯 支援局域網任意設備一鍵切換監控 & 實機偵測名稱 & iOS/iPadOS 網路邏輯</h4>
+          <ul>
+            <li><strong>局域網任意設備一鍵切換監控</strong>：
+              <ul>
+                <li>使用者可於下方設備清單點選任意裝置（如 <code>黃禹程的iPad</code>、<code>HP LaserJet MFP M28w</code>、<code>Samsung QN85BA 65</code>、<code>LAPTOP-E722LBBP</code>、<code>Nintendo Switch</code> 等），儀表板即刻無縫切換監控目標。</li>
+                <li>支援即時更新後端 <code>target_config.json</code>，背景監控服務在 1 秒內自動秒級切換探測對象。</li>
+              </ul>
+            </li>
+            <li><strong>實機偵測真實名稱與型號</strong>：
+              <ul>
+                <li>全面使用 mDNS (Bonjour)、UPnP、SMB/NetBIOS 與 IEEE OUI 實機掃描探測之真實名稱，徹底捨棄口語化硬編碼名稱。</li>
+                <li>精準識別 iPad (<code>黃禹程的iPad</code>)、HP 印表機 (<code>HP LaserJet MFP M28w (7C20A9)</code>)、三星智慧電視 (<code>Samsung QN85BA 65</code>)、Windows 筆電 (<code>LAPTOP-E722LBBP</code>) 等。</li>
+              </ul>
+            </li>
+            <li><strong>深度結合 iOS / iPadOS 網路邏輯</strong>：
+              <ul>
+                <li><strong>黑屏休眠 (Sleep)</strong>：針對 iOS/iPadOS 螢幕關閉 5~15 秒後 Wi-Fi 自動進入低功耗待機特性，提供 0.15s 高頻探測與極速鎖屏離線判定。</li>
+                <li><strong>APNs 背景推播瞬斷 (1~4s)</strong>：針對收發訊息時 Wi-Fi 晶片短暫喚醒之硬體特性，智能套用 5 秒抗推播驗證門檻，徹底消除黑屏誤報。</li>
+                <li><strong>非 iOS 設備自適應模式</strong>：針對電腦、電視、物聯網設備自動調整判定門檻。</li>
+              </ul>
+            </li>
+            <li><strong>全系統零廣播靜音可視化</strong>：全面移除語音干擾，改以 24 小時時段長條圖、訊號行為圓環圖、動態進度雷達與活動歷史時間軸進行視覺化呈現。</li>
+          </ul>
+        </div>
+
+        <div class="changelog-entry">
+          <div class="version-header">
+            <span class="version-tag badge badge-secondary">v2.2.0</span>
+            <span class="version-date">2026-09-28</span>
+          </div>
+          <h4>🔕 全面取消語音廣播與監控結果全面視覺化</h4>
+          <ul>
+            <li>全面關閉語音播報（取消 say 廣播），100% 零噪音干擾。</li>
+            <li>新增 24 小時時段使用直方圖與方案 A 行為佔比圓環圖。</li>
+            <li>鎖定監控黃宇程的哀配（MAC: <code>30:e0:4f:da:b9:1c</code>）。</li>
+          </ul>
+        </div>
+
+        <div class="changelog-entry">
+          <div class="version-header">
+            <span class="version-tag badge badge-secondary">v2.1.0</span>
+            <span class="version-date">2026-09-28</span>
+          </div>
+          <h4>切換追蹤手機 (192.168.1.114) 與 5 秒即時報時</h4>
+          <ul>
+            <li>改為追蹤 <code>192.168.1.114</code>（iPhone，MAC: <code>e2:ad:31:a3:34:92</code>）。</li>
+            <li>更新語音廣播詞與即時儀表板同步。</li>
+          </ul>
+        </div>
+
+        <div class="changelog-entry">
+          <div class="version-header">
+            <span class="version-tag badge badge-secondary">v2.0.0</span>
+            <span class="version-date">2026-09-28</span>
+          </div>
+          <h4>全新即時視覺化監控網站正式上線</h4>
+          <ul>
+            <li>支援電腦端與手機端（393×852 觸控優化）。</li>
+            <li>即時使用計時器、局域網雷達設備表與測試帳密登入機制。</li>
+          </ul>
+        </div>
+
+        <div class="changelog-entry">
+          <div class="version-header">
+            <span class="version-tag badge badge-secondary">v1.4.0</span>
+            <span class="version-date">2026-09-28</span>
+          </div>
+          <h4>發音正名「哀配」與關閉離線超低延遲優化</h4>
+          <ul>
+            <li>探測逾時壓縮至 0.12~0.15 秒，離線延遲降至 0.2~0.3 秒以內。</li>
+          </ul>
+        </div>
+
+        <div class="changelog-entry">
+          <div class="version-header">
+            <span class="version-tag badge badge-secondary">v1.3.0</span>
+            <span class="version-date">2026-09-28</span>
+          </div>
+          <h4>硬體 MAC 動態追蹤架構</h4>
+          <ul>
+            <li>鎖定實體 MAC，支援路由器 DHCP 重新配發 IP 時自動秒級跟隨。</li>
+          </ul>
+        </div>
+
+        <div class="changelog-entry">
+          <div class="version-header">
+            <span class="version-tag badge badge-secondary">v1.2.0</span>
+            <span class="version-date">2026-09-28</span>
+          </div>
+          <h4>雙重驗證防誤報與持續在線計時廣播</h4>
+          <ul>
+            <li>導入 100ms 雙重探測機制過濾 APNs 推播，新增計時與離線廣播。</li>
+          </ul>
+        </div>
+
+        <div class="changelog-entry">
+          <div class="version-header">
+            <span class="version-tag badge badge-secondary">v1.1.0</span>
+            <span class="version-date">2026-09-28</span>
+          </div>
+          <h4>30% 音量調整與長時巡檢</h4>
+          <ul>
+            <li>調降音量至 30%，避免過度干擾。</li>
+          </ul>
+        </div>
+
+        <div class="changelog-entry">
+          <div class="version-header">
+            <span class="version-tag badge badge-secondary">v1.0.0</span>
+            <span class="version-date">2026-09-28</span>
+          </div>
+          <h4>初始版本發布</h4>
+          <ul>
+            <li>初次建立本地網路探測與語音觸發廣播。</li>
+          </ul>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="confirmChangelogBtn">關閉</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Login Modal (User Rule 2) -->
+  <div class="modal-backdrop" id="loginModal">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-header">
+        <h2>🔒 管理員安全登入</h2>
+        <button class="modal-close" id="closeLoginBtn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="login-tip">請輸入管理員帳號與密碼以解鎖進階控制功能：</p>
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="usernameInput">帳號</label>
+            <input type="text" id="usernameInput" placeholder="請輸入帳號" required autocomplete="username">
+          </div>
+          <div class="form-group">
+            <label for="passwordInput">密碼</label>
+            <input type="password" id="passwordInput" placeholder="請輸入密碼" required autocomplete="current-password">
+          </div>
+          <div id="loginErrorMsg" class="error-msg" style="display: none;">帳號或密碼錯誤，請重新輸入！</div>
+          <div class="form-hint">
+            預設測試帳密：<code>antigravity</code> / <code>123456</code>
+          </div>
+          <div class="modal-actions">
+            <button type="submit" class="btn btn-primary btn-block">登入儀表板</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
